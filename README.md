@@ -20,12 +20,18 @@ npx serve public     # หรือ python3 -m http.server -d public
 
 ## เปิดใช้จาก iPad / มือถือ (ไม่ต้องใช้คอม)
 
-1. Firebase Console → **Firestore Database** → แท็บ **Rules** → วางเนื้อหาจาก `firestore.rules` → **Publish**
-2. GitHub → repo นี้ → **Settings → Pages** → Source: **GitHub Actions**
-3. GitHub → **Actions** → *Deploy to GitHub Pages* → **Run workflow**
-4. เปิด <https://oat9002.github.io/loy-krarong/>
+GitHub Actions จะ deploy ขึ้น Firebase Hosting ให้อัตโนมัติ ตั้งค่าครั้งเดียว:
 
-หลังจากนี้ทุกครั้งที่แก้ไฟล์ใน `public/` เว็บจะ deploy ใหม่เองอัตโนมัติ
+1. Firebase Console → **Firestore Database** → **Create database** (ถ้ายังไม่ได้สร้าง)
+2. Firebase Console → **Hosting** → **Get started** → กด Next จนจบ
+3. Firebase Console → ⚙️ **Project settings → Service accounts** → **Generate new private key**
+   ได้ไฟล์ `.json` มา เปิดในแอป Files แล้วคัดลอกข้อความทั้งหมด
+4. GitHub → repo นี้ → **Settings → Secrets and variables → Actions → New repository secret**
+   ชื่อ `FIREBASE_SERVICE_ACCOUNT` วางข้อความจากข้อ 3 → **Add secret**
+5. GitHub → **Actions** → *Deploy to Firebase* → **Run workflow**
+6. เปิด <https://loy-kratong-2ea09.web.app>
+
+หลังจากนี้ทุกครั้งที่แก้โค้ด เว็บจะ deploy ใหม่เองอัตโนมัติ (ลบไฟล์ key ในเครื่องทิ้งได้เลยหลังใส่ secret)
 
 ## ตั้งค่า Firebase ด้วย CLI (ประมาณ 5 นาที)
 
