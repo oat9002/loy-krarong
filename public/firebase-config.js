@@ -1,9 +1,10 @@
-// ใส่ค่าจาก Firebase Console → Project settings → Your apps → Web app
-// ถ้ายังไม่ใส่ (apiKey ยังเป็น "YOUR_API_KEY") เว็บจะทำงานใน "โหมดทดลอง"
-// ซึ่งซิงก์กันได้เฉพาะแท็บในเบราว์เซอร์เครื่องเดียวกัน
+// ค่าจาก Firebase Console → Project settings → Your apps → Web app
+// (ค่าพวกนี้เปิดเผยได้ ความปลอดภัยอยู่ที่ firestore.rules)
 export const firebaseConfig = {
-  apiKey: "YOUR_API_KEY",
+  apiKey: "AIzaSyDUHbODvsDObQCxs3oYPaLLhKyZliez1Ls",
   authDomain: "loy-kratong-2ea09.firebaseapp.com",
   projectId: "loy-kratong-2ea09",
-  appId: "YOUR_APP_ID",
+  storageBucket: "loy-kratong-2ea09.firebasestorage.app",
+  messagingSenderId: "260264274843",
+  appId: "1:260264274843:web:1264f55183433863b28f3e",
 };

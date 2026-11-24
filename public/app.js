@@ -272,7 +272,13 @@ function safeSet(key, value) {
 }
 
 /* ---------- start ---------- */
-const store = await createStore(firebaseConfig, room);
-if (store.demo) $("demoBadge").hidden = false;
-store.subscribe(render);
-store.subscribeTitle(showTitle);
+let store;
+try {
+  store = await createStore(firebaseConfig, room);
+  if (store.demo) $("demoBadge").hidden = false;
+  store.subscribe(render);
+  store.subscribeTitle(showTitle);
+} catch (err) {
+  console.error(err);
+  toast("เชื่อมต่อไม่ได้ ลองรีเฟรชหน้าอีกครั้งนะ");
+}
