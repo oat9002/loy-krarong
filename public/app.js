@@ -3,13 +3,9 @@ import { createStore } from "./store.js";
 import { createMusic } from "./music.js";
 
 /* ---------- room ---------- */
-const params = new URLSearchParams(location.search);
-let room = params.get("r");
-if (!room || !/^[a-z0-9]{6,32}$/.test(room)) {
-  room = Array.from(crypto.getRandomValues(new Uint8Array(10)), (b) => "abcdefghijkmnpqrstuvwxyz23456789"[b % 32]).join("");
-  params.set("r", room);
-  history.replaceState(null, "", `${location.pathname}?${params}`);
-}
+// One shared river for everyone who opens the site.
+const room = "together";
+if (location.search) history.replaceState(null, "", location.pathname); // drop old ?r= links
 
 const MINE_KEY = `loy:mine:${room}`;
 const NAME_KEY = "loy:name";
@@ -271,21 +267,6 @@ document.addEventListener("visibilitychange", () => {
   if (document.hidden && music.playing) { music.stop(); resumeOnShow = true; }
   else if (!document.hidden && resumeOnShow) { resumeOnShow = false; music.start().then(syncMusicBtn).catch(() => {}); }
 });
-
-/* ---------- share ---------- */
-$("shareBtn").onclick = async () => {
-  const url = location.href;
-  const text = "มาลอยกระทงด้วยกันนะ";
-  if (navigator.share) {
-    try { await navigator.share({ title: roomTitle || "ลอยกระทง", text, url }); return; } catch { /* cancelled */ }
-  }
-  try {
-    await navigator.clipboard.writeText(url);
-    toast("คัดลอกลิงก์แล้ว ส่งให้แฟนได้เลย");
-  } catch {
-    prompt("คัดลอกลิงก์นี้ส่งให้แฟน", url);
-  }
-};
 
 /* ---------- helpers ---------- */
 let toastTimer;
