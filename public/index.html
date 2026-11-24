@@ -1,0 +1,83 @@
+<!doctype html>
+<html lang="th">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <title>ลอยกระทง</title>
+  <meta name="theme-color" content="#0b1020" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Thai:wght@300;400;500&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <main class="scene" id="scene">
+    <div class="sky">
+      <div class="stars" id="stars"></div>
+      <div class="moon"></div>
+    </div>
+    <div class="river" id="river">
+      <div class="moon-reflect"></div>
+      <div class="ripples"></div>
+      <div class="krathongs" id="krathongs"></div>
+    </div>
+  </main>
+
+  <header class="top">
+    <div class="brand">
+      <span class="brand-title">ลอยกระทง</span>
+      <span class="brand-sub" id="count">สายน้ำยังว่างอยู่</span>
+    </div>
+    <button class="ghost" id="shareBtn" type="button">ชวนแฟน</button>
+  </header>
+
+  <div class="dock">
+    <button class="primary" id="openForm" type="button">ลอยกระทง</button>
+  </div>
+
+  <div class="badge" id="demoBadge" hidden>โหมดทดลอง · ซิงก์เฉพาะแท็บในเครื่องนี้</div>
+  <div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+  <!-- create sheet -->
+  <dialog class="sheet" id="formDialog">
+    <form id="form" method="dialog" autocomplete="off">
+      <div class="sheet-head">
+        <h2>กระทงของคุณ</h2>
+        <button class="icon" type="button" data-close aria-label="ปิด">✕</button>
+      </div>
+
+      <label class="photo-pick" id="photoPick">
+        <input type="file" accept="image/*" id="photo" hidden />
+        <span class="photo-preview" id="photoPreview"><span>+ รูป</span></span>
+      </label>
+
+      <label class="field">
+        <span>ชื่อ</span>
+        <input id="name" maxlength="40" placeholder="ชื่อเล่นของคุณ" required />
+      </label>
+
+      <label class="field">
+        <span>คำอธิษฐาน</span>
+        <textarea id="wish" maxlength="300" rows="3" placeholder="ขอให้…" required></textarea>
+      </label>
+
+      <div class="field">
+        <span>สีดอกไม้</span>
+        <div class="swatches" id="swatches"></div>
+      </div>
+
+      <button class="primary wide" id="submitBtn" type="submit">ลอยเลย</button>
+    </form>
+  </dialog>
+
+  <!-- detail card -->
+  <dialog class="card" id="detailDialog">
+    <button class="icon close" type="button" data-close aria-label="ปิด">✕</button>
+    <img class="card-photo" id="dPhoto" alt="" />
+    <p class="card-wish" id="dWish"></p>
+    <p class="card-meta"><span id="dName"></span> · <span id="dTime"></span></p>
+  </dialog>
+
+  <script type="module" src="app.js"></script>
+</body>
+</html>

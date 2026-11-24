@@ -1,0 +1,20 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // เข้าถึงได้เฉพาะคนที่รู้รหัสห้อง (อยู่ในลิงก์ ?r=...)
+    match /rooms/{room}/krathongs/{id} {
+      allow read: if room.size() >= 6;
+      allow create: if room.size() >= 6 && valid(request.resource.data);
+      allow update, delete: if false;
+    }
+  }
+
+  function valid(d) {
+    return d.keys().hasOnly(['name', 'wish', 'color', 'photo', 't', 'createdAt'])
+      && d.name is string && d.name.size() > 0 && d.name.size() <= 40
+      && d.wish is string && d.wish.size() > 0 && d.wish.size() <= 300
+      && d.color is string && d.color.size() <= 16
+      && d.t is int
+      && (d.photo == null || (d.photo is string && d.photo.size() <= 450000));
+  }
+}
