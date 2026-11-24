@@ -126,7 +126,7 @@ function render(list = latest) {
     if (Date.now() - k.t < 5000) el.classList.add("new");
     layer.append(el);
     const seed = hash(k.id);
-    items.set(k.id, { el, data: k, seed, lane: k.lane ?? 0.44 + ((seed * 7.31) % 1) * 0.44 });
+    items.set(k.id, { el, data: k, seed, lane: k.lane ?? 0.42 + ((seed * 7.31) % 1) * 0.32 });
   }
   for (const [id, it] of items) if (!seen.has(id)) { it.el.remove(); items.delete(id); }
 
@@ -141,13 +141,13 @@ function tick(now) {
   const span = w + 200;
   for (const it of items.values()) {
     // position derived from creation time so both of you see the same spot
-    const start = (100 + w * (0.2 + it.seed * 0.1)) / span; // first appear ~20–30% in
+    const start = (100 + w * (0.08 + ((it.seed * 13.7) % 1) * 0.55)) / span; // first appear 8–63% in, spread apart
     const p = (((wall - it.data.t) / (CROSS_MS * (it.data.speed || 1)) + (it.data.phase ?? start)) % 1 + 1) % 1;
     const x = -100 + p * span;
     const bob = Math.sin(now / 900 + it.seed * 40) * 3;
     const tilt = Math.sin(now / 1300 + it.seed * 20) * 3;
     const y = it.lane * h + bob;
-    const scale = 0.62 + it.lane * 0.55; // nearer = bigger
+    const scale = (0.62 + it.lane * 0.55) * (it.data.ambient ? 1 : 1.4); // nearer = bigger; ours stand out
     it.el.style.transform = `translate3d(${x}px, ${y}px, 0) rotate(${tilt}deg) scale(${scale})`;
     it.el.style.zIndex = String(Math.round(it.lane * 100));
   }
