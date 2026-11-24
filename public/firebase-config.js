@@ -3,7 +3,7 @@
 // ซึ่งซิงก์กันได้เฉพาะแท็บในเบราว์เซอร์เครื่องเดียวกัน
 export const firebaseConfig = {
   apiKey: "YOUR_API_KEY",
-  authDomain: "YOUR_PROJECT.firebaseapp.com",
-  projectId: "YOUR_PROJECT",
+  authDomain: "loy-kratong-2ea09.firebaseapp.com",
+  projectId: "loy-kratong-2ea09",
   appId: "YOUR_APP_ID",
 };
