@@ -126,7 +126,11 @@ function render(list = latest) {
     if (Date.now() - k.t < 5000) el.classList.add("new");
     layer.append(el);
     const seed = hash(k.id);
-    items.set(k.id, { el, data: k, seed, lane: k.lane ?? 0.42 + ((seed * 7.31) % 1) * 0.32 });
+    items.set(k.id, {
+      el, data: k, seed,
+      lane: k.lane ?? 0.42 + ((seed * 7.31) % 1) * 0.32,
+      speed: k.speed ?? 0.75 + ((seed * 5.17) % 1) * 0.6, // each drifts at its own pace (0.75–1.35×)
+    });
   }
   for (const [id, it] of items) if (!seen.has(id)) { it.el.remove(); items.delete(id); }
 
@@ -142,7 +146,7 @@ function tick(now) {
   for (const it of items.values()) {
     // position derived from creation time so both of you see the same spot
     const start = (100 + w * (0.08 + ((it.seed * 13.7) % 1) * 0.55)) / span; // first appear 8–63% in, spread apart
-    const p = (((wall - it.data.t) / (CROSS_MS * (it.data.speed || 1)) + (it.data.phase ?? start)) % 1 + 1) % 1;
+    const p = (((wall - it.data.t) / (CROSS_MS * it.speed) + (it.data.phase ?? start)) % 1 + 1) % 1;
     const x = -100 + p * span;
     const bob = Math.sin(now / 900 + it.seed * 40) * 3;
     const tilt = Math.sin(now / 1300 + it.seed * 20) * 3;
