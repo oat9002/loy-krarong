@@ -18,7 +18,16 @@ npx serve public     # หรือ python3 -m http.server -d public
 ถ้ายังไม่ได้ตั้งค่า Firebase จะเป็น "โหมดทดลอง" ซิงก์ได้เฉพาะแท็บในเบราว์เซอร์เดียวกัน
 (เปิดสองแท็บด้วยลิงก์เดียวกันเพื่อลองดู)
 
-## ตั้งค่า Firebase (ประมาณ 5 นาที)
+## เปิดใช้จาก iPad / มือถือ (ไม่ต้องใช้คอม)
+
+1. Firebase Console → **Firestore Database** → แท็บ **Rules** → วางเนื้อหาจาก `firestore.rules` → **Publish**
+2. GitHub → repo นี้ → **Settings → Pages** → Source: **GitHub Actions**
+3. GitHub → **Actions** → *Deploy to GitHub Pages* → **Run workflow**
+4. เปิด <https://oat9002.github.io/loy-krarong/>
+
+หลังจากนี้ทุกครั้งที่แก้ไฟล์ใน `public/` เว็บจะ deploy ใหม่เองอัตโนมัติ
+
+## ตั้งค่า Firebase ด้วย CLI (ประมาณ 5 นาที)
 
 1. ไปที่ <https://console.firebase.google.com> → **Add project**
 2. **Build → Firestore Database → Create database** (เลือก production mode, region `asia-southeast1`)
