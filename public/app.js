@@ -1,5 +1,6 @@
 import { firebaseConfig } from "./firebase-config.js";
 import { createStore } from "./store.js";
+import { createMusic } from "./music.js";
 
 /* ---------- room ---------- */
 const params = new URLSearchParams(location.search);
@@ -242,6 +243,34 @@ $("titleForm").onsubmit = async (e) => {
     toast("บันทึกไม่สำเร็จ ลองอีกครั้งนะ");
   }
 };
+
+/* ---------- music ---------- */
+const MUSIC_KEY = "loy:music";
+const music = createMusic();
+const musicBtn = $("musicBtn");
+function syncMusicBtn() {
+  musicBtn.setAttribute("aria-pressed", String(music.playing));
+  musicBtn.setAttribute("aria-label", music.playing ? "ปิดเพลง" : "เปิดเพลง");
+}
+musicBtn.onclick = async () => {
+  if (music.playing) music.stop(); else await music.start().catch(() => toast("เปิดเพลงไม่ได้"));
+  safeSet(MUSIC_KEY, music.playing);
+  syncMusicBtn();
+};
+// browsers need a tap before playing sound: resume the user's choice on first tap
+if (safeGet(MUSIC_KEY, false)) {
+  const resume = async (e) => {
+    if (e.target.closest?.("#musicBtn")) return;
+    await music.start().catch(() => {});
+    syncMusicBtn();
+  };
+  window.addEventListener("pointerdown", resume, { once: true });
+}
+let resumeOnShow = false; // pause while the tab is in the background
+document.addEventListener("visibilitychange", () => {
+  if (document.hidden && music.playing) { music.stop(); resumeOnShow = true; }
+  else if (!document.hidden && resumeOnShow) { resumeOnShow = false; music.start().then(syncMusicBtn).catch(() => {}); }
+});
 
 /* ---------- share ---------- */
 $("shareBtn").onclick = async () => {
