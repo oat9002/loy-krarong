@@ -65,11 +65,28 @@ button, input, textarea { font: inherit; color: inherit; }
 
 .ripples {
   position: absolute; inset: 0;
-  background-image: repeating-linear-gradient(
-    180deg, transparent 0 22px, rgba(255, 255, 255, .035) 22px 23px);
-  animation: drift 14s linear infinite;
+  /* fade waves in toward the viewer */
+  -webkit-mask-image: linear-gradient(rgba(0,0,0,.25), #000 60%);
+          mask-image: linear-gradient(rgba(0,0,0,.25), #000 60%);
 }
-@keyframes drift { to { background-position: 0 46px; } }
+.ripples::before, .ripples::after {
+  content: ""; position: absolute; inset: -20px -320px;
+  background-repeat: repeat;
+}
+.ripples::before {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='48'%3E%3Cg fill='none' stroke='white' stroke-opacity='0.06' stroke-width='1' stroke-linecap='round'%3E%3Cpath d='M0 12 Q25 8 50 12 T100 12 T150 12 T200 12'/%3E%3Cpath d='M0 36 Q25 40 50 36 T100 36 T150 36 T200 36'/%3E%3C/g%3E%3C/svg%3E");
+  background-size: 200px 70px;
+  animation: wave-a 18s linear infinite, bob 7s ease-in-out infinite;
+}
+.ripples::after {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='48'%3E%3Cg fill='none' stroke='white' stroke-opacity='0.035' stroke-width='1' stroke-linecap='round'%3E%3Cpath d='M0 12 Q25 8 50 12 T100 12 T150 12 T200 12'/%3E%3Cpath d='M0 36 Q25 40 50 36 T100 36 T150 36 T200 36'/%3E%3C/g%3E%3C/svg%3E");
+  background-size: 300px 110px;
+  background-position: 120px 30px;
+  animation: wave-b 26s linear infinite, bob 9s ease-in-out infinite reverse;
+}
+@keyframes wave-a { to { transform: translateX(200px); } }
+@keyframes wave-b { to { transform: translateX(-300px); } }
+@keyframes bob { 50% { translate: 0 4px; } }
 
 .krathongs { position: absolute; inset: 0; }
 
