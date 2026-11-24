@@ -128,7 +128,7 @@ function render(list = latest) {
     const seed = hash(k.id);
     items.set(k.id, {
       el, data: k, seed,
-      lane: k.lane ?? 0.42 + ((seed * 7.31) % 1) * 0.32,
+      lane: k.lane ?? 0.4 + ((seed * 7.31) % 1) * 0.3,
       speed: k.speed ?? 0.75 + ((seed * 5.17) % 1) * 0.6, // each drifts at its own pace (0.75–1.35×)
     });
   }
@@ -150,7 +150,8 @@ function tick(now) {
     const x = -100 + p * span;
     const bob = Math.sin(now / 900 + it.seed * 40) * 3;
     const tilt = Math.sin(now / 1300 + it.seed * 20) * 3;
-    const y = it.lane * h + bob;
+    const TOP = 56; // keep the farthest krathongs fully below the horizon
+    const y = TOP + it.lane * (h - TOP) + bob;
     const scale = (0.62 + it.lane * 0.55) * (it.data.ambient ? 1 : 1.4); // nearer = bigger; ours stand out
     it.el.style.transform = `translate3d(${x}px, ${y}px, 0) rotate(${tilt}deg) scale(${scale})`;
     it.el.style.zIndex = String(Math.round(it.lane * 100));
