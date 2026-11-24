@@ -25,7 +25,7 @@
 
   <header class="top">
     <div class="brand">
-      <span class="brand-title">ลอยกระทง</span>
+      <button class="brand-title" id="titleBtn" type="button" aria-label="แก้ชื่อห้อง"><span id="roomTitle">ลอยกระทง</span><span class="pen" aria-hidden="true">✎</span></button>
       <span class="brand-sub" id="count">สายน้ำยังว่างอยู่</span>
     </div>
     <button class="ghost" id="shareBtn" type="button">ชวนแฟน</button>
@@ -67,6 +67,21 @@
       </div>
 
       <button class="primary wide" id="submitBtn" type="submit">ลอยเลย</button>
+    </form>
+  </dialog>
+
+  <!-- room title -->
+  <dialog class="sheet" id="titleDialog">
+    <form id="titleForm" method="dialog" autocomplete="off">
+      <div class="sheet-head">
+        <h2>ชื่อห้องของเรา</h2>
+        <button class="icon" type="button" data-close aria-label="ปิด">✕</button>
+      </div>
+      <label class="field">
+        <span>แฟนจะเห็นชื่อนี้ด้วย</span>
+        <input id="titleInput" maxlength="40" placeholder="เช่น ออม ♡ ต้น" />
+      </label>
+      <button class="primary wide" type="submit">บันทึก</button>
     </form>
   </dialog>
 

@@ -10,6 +10,7 @@ export async function createStore(config, room) {
   const fs = await import(`${FB}/firebase-firestore.js`);
   const db = fs.getFirestore(initializeApp(config));
   const col = fs.collection(db, "rooms", room, "krathongs");
+  const roomRef = fs.doc(db, "rooms", room);
 
   return {
     demo: false,
@@ -22,17 +23,27 @@ export async function createStore(config, room) {
       return fs.onSnapshot(q, (snap) => cb(snap.docs.map((d) => ({ id: d.id, ...d.data() }))),
         (err) => console.error("firestore:", err));
     },
+    async setTitle(title) {
+      await fs.setDoc(roomRef, { title }, { merge: true });
+    },
+    subscribeTitle(cb) {
+      return fs.onSnapshot(roomRef, (snap) => cb(snap.data()?.title || ""),
+        (err) => console.error("firestore:", err));
+    },
   };
 }
 
 function demoStore(room) {
   const key = `loy:demo:${room}`;
+  const titleKey = `${key}:title`;
+  const titleListeners = new Set();
+  const emitTitle = () => titleListeners.forEach((cb) => cb(localStorage.getItem(titleKey) || ""));
   const bc = "BroadcastChannel" in window ? new BroadcastChannel(key) : null;
   const read = () => { try { return JSON.parse(localStorage.getItem(key)) || []; } catch { return []; } };
   const listeners = new Set();
   const emit = () => { const list = read(); listeners.forEach((cb) => cb(list)); };
-  bc?.addEventListener("message", emit);
-  window.addEventListener("storage", (e) => e.key === key && emit());
+  bc?.addEventListener("message", () => { emit(); emitTitle(); });
+  window.addEventListener("storage", (e) => { if (e.key === key) emit(); if (e.key === titleKey) emitTitle(); });
 
   return {
     demo: true,
@@ -45,5 +56,11 @@ function demoStore(room) {
       return id;
     },
     subscribe(cb) { listeners.add(cb); cb(read()); return () => listeners.delete(cb); },
+    async setTitle(title) {
+      localStorage.setItem(titleKey, title);
+      bc?.postMessage("change");
+      emitTitle();
+    },
+    subscribeTitle(cb) { titleListeners.add(cb); emitTitle(); return () => titleListeners.delete(cb); },
   };
 }

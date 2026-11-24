@@ -20,6 +20,7 @@ const layer = $("krathongs");
 const river = $("river");
 const formDialog = $("formDialog");
 const detailDialog = $("detailDialog");
+const titleDialog = $("titleDialog");
 const form = $("form");
 const photoInput = $("photo");
 const photoPreview = $("photoPreview");
@@ -155,7 +156,7 @@ $("name").value = localStorage.getItem(NAME_KEY) || "";
 
 $("openForm").onclick = () => formDialog.showModal();
 document.querySelectorAll("[data-close]").forEach((b) => (b.onclick = () => b.closest("dialog").close()));
-for (const d of [formDialog, detailDialog]) {
+for (const d of [formDialog, detailDialog, titleDialog]) {
   d.addEventListener("click", (e) => { if (e.target === d) d.close(); }); // click backdrop
 }
 
@@ -198,12 +199,37 @@ form.onsubmit = async (e) => {
   }
 };
 
+/* ---------- room title ---------- */
+const DEFAULT_TITLE = "ลอยกระทง";
+let roomTitle = "";
+function showTitle(t) {
+  roomTitle = t || "";
+  $("roomTitle").textContent = roomTitle || DEFAULT_TITLE;
+  document.title = roomTitle ? `${roomTitle} · ลอยกระทง` : DEFAULT_TITLE;
+}
+$("titleBtn").onclick = () => {
+  $("titleInput").value = roomTitle;
+  titleDialog.showModal();
+};
+$("titleForm").onsubmit = async (e) => {
+  e.preventDefault();
+  const t = $("titleInput").value.trim().slice(0, 40);
+  try {
+    await store.setTitle(t);
+    showTitle(t);
+    titleDialog.close();
+  } catch (err) {
+    console.error(err);
+    toast("บันทึกไม่สำเร็จ ลองอีกครั้งนะ");
+  }
+};
+
 /* ---------- share ---------- */
 $("shareBtn").onclick = async () => {
   const url = location.href;
   const text = "มาลอยกระทงด้วยกันนะ";
   if (navigator.share) {
-    try { await navigator.share({ title: "ลอยกระทง", text, url }); return; } catch { /* cancelled */ }
+    try { await navigator.share({ title: roomTitle || "ลอยกระทง", text, url }); return; } catch { /* cancelled */ }
   }
   try {
     await navigator.clipboard.writeText(url);
@@ -249,3 +275,4 @@ function safeSet(key, value) {
 const store = await createStore(firebaseConfig, room);
 if (store.demo) $("demoBadge").hidden = false;
 store.subscribe(render);
+store.subscribeTitle(showTitle);
