@@ -29,10 +29,18 @@ jobs:
             echo "::error::Missing secret FIREBASE_SERVICE_ACCOUNT (see README)"; exit 1
           fi
           printf '%s' "$SA" > "$RUNNER_TEMP/sa.json"
-      - name: Deploy hosting + Firestore rules
+      - name: Show which service account is used
+        run: |
+          echo "project_id:   $(jq -r .project_id "$RUNNER_TEMP/sa.json")"
+          echo "client_email: $(jq -r .client_email "$RUNNER_TEMP/sa.json")"
+      - name: Deploy hosting
         env:
           GOOGLE_APPLICATION_CREDENTIALS: ${{ runner.temp }}/sa.json
-        run: npx -y firebase-tools@13 deploy --only hosting,firestore:rules --project loy-kratong-2ea09 --non-interactive
+        run: npx -y firebase-tools@13 deploy --only hosting --project loy-kratong-2ea09 --non-interactive
+      - name: Deploy Firestore rules
+        env:
+          GOOGLE_APPLICATION_CREDENTIALS: ${{ runner.temp }}/sa.json
+        run: npx -y firebase-tools@13 deploy --only firestore:rules --project loy-kratong-2ea09 --non-interactive
       - name: Clean up key
         if: always()
         run: rm -f "$RUNNER_TEMP/sa.json"
