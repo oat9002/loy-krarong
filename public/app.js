@@ -77,6 +77,23 @@ function krathongSVG(petal) {
 
 /* ---------- floating ---------- */
 const CROSS_MS = 90_000; // time to cross the screen once
+
+// Krathongs from "other people" drifting far away, so the river never feels empty.
+// Deterministic (fixed t), so both of you see them at the same spots. Not stored anywhere.
+const AMBIENT = [
+  ["#f4b6c2", "ขอให้ครอบครัวแข็งแรง"],
+  ["#ffffff", "ขอให้สอบผ่าน"],
+  ["#f6e3b4", "ขอให้ปีหน้าดีกว่าปีนี้"],
+  ["#c9b8f0", "ขอให้เจอคนที่ใช่"],
+  ["#f7a072", "ขอให้งานราบรื่น"],
+  ["#f4b6c2", "ขอขมาพระแม่คงคา"],
+  ["#ffffff", "ขอให้ทุกคนมีความสุข"],
+  ["#f6e3b4", "ขอให้หายเหนื่อย"],
+].map(([color, wish], i) => ({
+  id: `ambient-${i}`, ambient: true, name: "", wish, color,
+  t: 0, phase: i / 8, speed: 1.3 + (i % 3) * 0.15, lane: 0.1 + (i * 0.375 % 1) * 0.28,
+}));
+let latest = [];
 const items = new Map(); // id -> { el, data, lane, seed }
 
 function hash(str) {
@@ -85,15 +102,17 @@ function hash(str) {
   return (h >>> 0) / 4294967295;
 }
 
-function render(list) {
+function render(list = latest) {
+  latest = list;
+  list = [...list, ...AMBIENT];
   const seen = new Set();
   for (const k of list) {
     seen.add(k.id);
     if (items.has(k.id)) continue;
     const el = document.createElement("button");
     el.type = "button";
-    el.className = "kt" + (mine.has(k.id) ? " mine" : "");
-    el.setAttribute("aria-label", `กระทงของ ${k.name}`);
+    el.className = "kt" + (mine.has(k.id) ? " mine" : "") + (k.ambient ? " ambient" : "");
+    el.setAttribute("aria-label", k.ambient ? "กระทงของใครสักคน" : `กระทงของ ${k.name}`);
     el.innerHTML = `<span class="glow"></span><span class="reflect"></span>${krathongSVG(k.color || COLORS[0])}`;
     if (k.photo) {
       const img = document.createElement("img");
@@ -110,11 +129,11 @@ function render(list) {
     if (Date.now() - k.t < 5000) el.classList.add("new");
     layer.append(el);
     const seed = hash(k.id);
-    items.set(k.id, { el, data: k, seed, lane: 0.12 + ((seed * 7.31) % 1) * 0.68 });
+    items.set(k.id, { el, data: k, seed, lane: k.lane ?? 0.44 + ((seed * 7.31) % 1) * 0.44 });
   }
   for (const [id, it] of items) if (!seen.has(id)) { it.el.remove(); items.delete(id); }
 
-  const n = items.size;
+  const n = latest.length;
   $("count").textContent = n ? `มีกระทง ${n} ใบ ลอยอยู่` : "สายน้ำยังว่างอยู่";
 }
 
@@ -126,7 +145,7 @@ function tick(now) {
   for (const it of items.values()) {
     // position derived from creation time so both of you see the same spot
     const start = (100 + w * (0.2 + it.seed * 0.1)) / span; // first appear ~20–30% in
-    const p = (((wall - it.data.t) / CROSS_MS + start) % 1 + 1) % 1;
+    const p = (((wall - it.data.t) / (CROSS_MS * (it.data.speed || 1)) + (it.data.phase ?? start)) % 1 + 1) % 1;
     const x = -100 + p * span;
     const bob = Math.sin(now / 900 + it.seed * 40) * 3;
     const tilt = Math.sin(now / 1300 + it.seed * 20) * 3;
@@ -145,8 +164,8 @@ function showDetail(k) {
   img.hidden = !k.photo;
   if (k.photo) img.src = k.photo;
   $("dWish").textContent = k.wish;
-  $("dName").textContent = k.name;
-  $("dTime").textContent = new Date(k.t).toLocaleString("th-TH", { dateStyle: "medium", timeStyle: "short" });
+  $("dName").textContent = k.ambient ? "ใครสักคน" : k.name;
+  $("dTime").textContent = k.ambient ? "คืนนี้" : new Date(k.t).toLocaleString("th-TH", { dateStyle: "medium", timeStyle: "short" });
   detailDialog.showModal();
 }
 
@@ -273,6 +292,7 @@ function safeSet(key, value) {
 
 /* ---------- start ---------- */
 let store;
+render([]);
 try {
   store = await createStore(firebaseConfig, room);
   if (store.demo) $("demoBadge").hidden = false;
